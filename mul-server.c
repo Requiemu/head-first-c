@@ -112,6 +112,7 @@ int main(){
           }
         }
       close(connect_d);
+      exit(0);
     }
     
   }

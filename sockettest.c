@@ -11,6 +11,23 @@ void error(char *msg){
   exit(1);
 }
 
+void read_in(int socket, char *buf, int len){
+  char *s = buf;
+  int slen = len;
+  int c = recv(socket, s, slen, 0);
+  while ((c>0) && (s[c-1] != '\n')){
+    s += c;slen -= c;
+    c = recv(socket, s, slen, 0);
+  }
+  if (c<0)
+    return c;
+  else if (c == 0)
+    buf[0] = '\0';
+  else
+    s[c-1]='\0';
+  return len - slen;
+}
+
 int main(int argc, char *argv[]){
   char *advice[] = {
     "Take smaller bites\r\n",
@@ -35,6 +52,7 @@ int main(int argc, char *argv[]){
   
   if (listen(listener_d, 10) == -1) error("Can't listen.");
   puts("Waiting for connection");
+  
   while(1){
     struct sockaddr_storage client_addr;
     unsigned int address_size = sizeof(client_addr);
